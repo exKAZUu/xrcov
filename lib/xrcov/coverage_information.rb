@@ -5,6 +5,10 @@ class CoverageInformation
     @elems = []
   end
 
+  def ==(that)
+    @elems == that.elems && @ieval == that.ieval
+  end
+
   def append(f)
     TsvWriter.instance.file = f
     @elems.each { |e|
@@ -27,7 +31,7 @@ class CoverageInformation
     info
   end
 
-  def read_measured_data(f)
+  def read_coverage_data(f)
     until f.eof?
       id, type, value = f.readline.split(',')
       elems[id.to_i].state |= value.to_i

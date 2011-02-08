@@ -1,5 +1,4 @@
 require 'spec_helper'
-
 require 'fileutils'
 
 FILE_NAME = "test.tsv"
@@ -20,22 +19,49 @@ describe TsvWriter do
     FileUtils.remove(FILE_NAME)
   end
 
-  it 'should write one record which consists of a string item' do
-    @out.write_last("abc")
-    close_and_read(@f).should == "abc\n"
+  describe '#write' do
+    context 'given "abc"' do
+      it 'writes' do
+        @out.write('abc')
+        close_and_read(@f).should eq "abc\t"
+      end
+    end
+
+    context 'given "abc", "zzzz"' do
+      it 'writes' do
+        @out.write('abc')
+        @out.write('zzzz')
+        close_and_read(@f).should eq "abc\tzzzz\t"
+      end
+    end
   end
 
-  it 'should write some records which consists of a string item' do
-    @out.write_last("abc")
-    @out.write_last("zzzz")
-    close_and_read(@f).should == "abc\nzzzz\n"
+  describe '#write_last' do
+    context 'given "abc"' do
+      it 'writes' do
+        @out.write_last('abc')
+        close_and_read(@f).should eq "abc\n"
+      end
+    end
+
+    context 'given "abc", "zzzz"' do
+      it 'writes' do
+        @out.write_last('abc')
+        @out.write_last('zzzz')
+        close_and_read(@f).should eq "abc\nzzzz\n"
+      end
+    end
   end
 
-  it 'should write some records which consists of some items' do
-    @out.write(1)
-    @out.write_last("abc")
-    @out.write("a")
-    @out.write_last("zzzz")
-    close_and_read(@f).should == "1\tabc\na\tzzzz\n"
+  describe '#write and #write_last' do
+    context 'given #w:"abc", #wl:"zzzz", #w:"1", #wl:"1A"' do
+      it 'writes' do
+        @out.write('abc')
+        @out.write_last('zzzz')
+        @out.write('1')
+        @out.write_last('1A')
+        close_and_read(@f).should eq "abc\tzzzz\n1\t1A\n"
+      end
+    end
   end
 end

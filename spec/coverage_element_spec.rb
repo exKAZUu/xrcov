@@ -17,143 +17,209 @@ class Writer
   end
 end
 
-describe CoverageElement, "when range is (0...0)" do
-  before(:all) do
+describe CoverageElement do
+  include CoverageState
+
+  def initialize(*states)
     @info = CoverageInformation.new()
-    @info.elems << CoverageElement.new(ElementType::BRANCH, "path", [1, 2], "tag")
+    states.each { |s|
+      e = CoverageElement.new(ElementType::BRANCH, "path", [1, 2], "tag", (1...states.size))
+      e.state = s
+      @info.elems << e
+    }
     @e = @info.elems[0]
-    @e.state = CoverageState::FALSE
     @out = Writer.new
   end
 
-  def test_children_and_self_state(s)
-    @e.state = s
-    @e.children_and_self_state(@info).should == s
+  describe '#children_and_self_state' do
+    context 'given NONE as state' do
+      before do
+        initialize(NONE)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq @e.state
+      end
+    end
+
+    context 'given FALSE as state' do
+      before do
+        initialize(FALSE)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq @e.state
+      end
+    end
+
+    context 'given TRUE as state' do
+      before do
+        initialize(TRUE)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq @e.state
+      end
+    end
+
+    context 'given BOTH as state' do
+      before do
+        initialize(BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq @e.state
+      end
+    end
+
+    context 'given FALSE, BOTH, TRUE, NONE as states' do
+      before do
+        initialize(FALSE, BOTH, TRUE, NONE)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq NONE
+      end
+    end
+
+    context 'given FALSE, BOTH, TRUE, TRUE as states' do
+      before do initialize(FALSE, BOTH, TRUE, TRUE)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq NONE
+      end
+    end
+
+    context 'given FALSE, BOTH, BOTH, BOTH as states' do
+      before do initialize(FALSE, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq FALSE
+      end
+    end
+
+    context 'given TRUE, BOTH, BOTH, BOTH as states' do
+      before do initialize(TRUE, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq TRUE
+      end
+    end
+
+    context 'given BOTH, BOTH, BOTH, BOTH as states' do
+      before do initialize(BOTH, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children and itself' do
+        @e.children_and_self_state(@info).should eq BOTH
+      end
+    end
   end
 
-  context 'get state of children & self' do
-    it 'should be CoverageState::NONE' do
-      test_children_and_self_state(CoverageState::NONE)
+  describe '#children_or_self_state' do
+    context 'given NONE as state' do
+      before do
+        initialize(NONE)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq @e.state
+      end
     end
-    it 'should be CoverageState::FLASE' do
-      test_children_and_self_state(CoverageState::NONE)
+
+    context 'given FALSE as state' do
+      before do
+        initialize(FALSE)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq @e.state
+      end
     end
-    it 'should be CoverageState::TRUE' do
-      test_children_and_self_state(CoverageState::TRUE)
+
+    context 'given TRUE as state' do
+      before do
+        initialize(TRUE)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq @e.state
+      end
     end
-    it 'should be CoverageState::BOTH' do
-      test_children_and_self_state(CoverageState::BOTH)
+
+    context 'given BOTH as state' do
+      before do
+        initialize(BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq @e.state
+      end
+    end
+
+    context 'given FALSE, BOTH, TRUE, NONE as states' do
+      before do
+        initialize(FALSE, BOTH, TRUE, NONE)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq NONE
+      end
+    end
+
+    context 'given FALSE, BOTH, TRUE, TRUE as states' do
+      before do initialize(FALSE, BOTH, TRUE, TRUE)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq TRUE
+      end
+    end
+
+    context 'given FALSE, BOTH, BOTH, BOTH as states' do
+      before do initialize(FALSE, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq BOTH
+      end
+    end
+
+    context 'given TRUE, BOTH, BOTH, BOTH as states' do
+      before do initialize(TRUE, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq BOTH
+      end
+    end
+
+    context 'given BOTH, BOTH, BOTH, BOTH as states' do
+      before do initialize(BOTH, BOTH, BOTH, BOTH)
+      end
+
+      it 'gets value of logical multiply between states of children or value of its state' do
+        @e.children_or_self_state(@info).should eq BOTH
+      end
     end
   end
 
-  def test_children_or_self_state(s)
-    @e.state = s
-    @e.children_or_self_state(@info).should == s
-  end
+  describe '#write and #read' do
+    before do
+      @e = CoverageElement.new(ElementType::CONDITION, "/p", [2, 0], "", (1...2))
+      @e2 = CoverageElement.read(@e.write(@out))
+    end
 
-  context 'get state of children & self' do
-    it 'should be CoverageState::NONE' do
-      test_children_or_self_state(CoverageState::NONE)
+    it 'restore itself' do
+      @e.type.should == @e2.type
+      @e.path.should == @e2.path
+      @e.pos.should == @e2.pos
+      @e.tag.should == @e2.tag
+      @e.state.should == @e2.state
+      @e.child_range.should == @e2.child_range
     end
-    it 'should be CoverageState::FLASE' do
-      test_children_or_self_state(CoverageState::NONE)
-    end
-    it 'should be CoverageState::TRUE' do
-      test_children_or_self_state(CoverageState::TRUE)
-    end
-    it 'should be CoverageState::BOTH' do
-      test_children_or_self_state(CoverageState::BOTH)
-    end
-  end
-
-  it 'should write and read itself' do
-    e = CoverageElement.new(ElementType::CONDITION, "/p", [2, 0], "", (1...2))
-    e2 = CoverageElement.read(e.write(@out))
-    e.type.should == e2.type
-    e.path.should == e2.path
-    e.pos.should == e2.pos
-    e.tag.should == e2.tag
-    e.state.should == e2.state
-    e.child_range.should == e2.child_range
   end
 end
-
-describe CoverageElement, "when range is (1...3)" do
-  before(:all) do
-    @info = CoverageInformation.new()
-    @info.elems << CoverageElement.new(nil, nil, nil, nil, (1...3))
-    @info.elems << CoverageElement.new(nil, nil, nil, nil, nil)
-    @info.elems << CoverageElement.new(nil, nil, nil, nil, nil)
-    @info.elems << CoverageElement.new(nil, nil, nil, nil, nil)
-    @e = @info.elems[0]
-  end
-
-  context 'get state of children & self' do
-    it 'should be CoverageState::NONE' do
-      @info.elems[0].state = CoverageState::FALSE
-      @info.elems[1].state = CoverageState::BOTH
-      @info.elems[2].state = CoverageState::TRUE
-      @info.elems[3].state = CoverageState::NONE
-      @e.children_and_self_state(@info).should == CoverageState::NONE
-    end
-
-    it 'should be CoverageState::FALSE' do
-      @info.elems[0].state = CoverageState::BOTH
-      @info.elems[1].state = CoverageState::BOTH
-      @info.elems[2].state = CoverageState::FALSE
-      @info.elems[3].state = CoverageState::FALSE
-      @e.children_and_self_state(@info).should == CoverageState::FALSE
-    end
-
-    it 'should be CoverageState::TRUE' do
-      @info.elems[0].state = CoverageState::BOTH
-      @info.elems[1].state = CoverageState::BOTH
-      @info.elems[2].state = CoverageState::TRUE
-      @info.elems[3].state = CoverageState::TRUE
-      @e.children_and_self_state(@info).should == CoverageState::TRUE
-    end
-
-    it 'should be CoverageState::BOTH' do
-      @info.elems[0].state = CoverageState::BOTH
-      @info.elems[1].state = CoverageState::BOTH
-      @info.elems[2].state = CoverageState::BOTH
-      @info.elems[3].state = CoverageState::BOTH
-      @e.children_and_self_state(@info).should == CoverageState::BOTH
-    end
-  end
-
-  context 'get state of children | self' do
-    it 'should be CoverageState::NONE' do
-      @info.elems[0].state = CoverageState::BOTH
-      @info.elems[1].state = CoverageState::FALSE
-      @info.elems[2].state = CoverageState::TRUE
-      @info.elems[3].state = CoverageState::BOTH
-      @e.children_or_self_state(@info).should == CoverageState::NONE
-    end
-
-    it 'should be CoverageState::FALSE' do
-      @info.elems[0].state = CoverageState::NONE
-      @info.elems[1].state = CoverageState::FALSE
-      @info.elems[2].state = CoverageState::BOTH
-      @info.elems[3].state = CoverageState::FALSE
-      @e.children_or_self_state(@info).should == CoverageState::FALSE
-    end
-
-    it 'should be CoverageState::TRUE' do
-      @info.elems[0].state = CoverageState::FALSE
-      @info.elems[1].state = CoverageState::TRUE
-      @info.elems[2].state = CoverageState::BOTH
-      @info.elems[3].state = CoverageState::TRUE
-      @e.children_or_self_state(@info).should == CoverageState::TRUE
-    end
-
-    it 'should be CoverageState::BOTH' do
-      @info.elems[0].state = CoverageState::TRUE
-      @info.elems[1].state = CoverageState::BOTH
-      @info.elems[2].state = CoverageState::BOTH
-      @info.elems[3].state = CoverageState::BOTH
-      @e.children_or_self_state(@info).should == CoverageState::BOTH
-    end
-  end
-end
-
