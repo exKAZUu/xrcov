@@ -11,12 +11,12 @@ end
 describe TsvWriter do
 
   before(:each) do
-    @out = TsvWriter.instance
-    @out.file = @f = open(FILE_NAME, "w")
+    @f = open(FILE_NAME, "w")
+    @out = TsvWriter.new(@f)
   end
 
   after(:each) do
-    FileUtils.remove(FILE_NAME)
+    FileUtils.safe_unlink(FILE_NAME)
   end
 
   describe '#write' do

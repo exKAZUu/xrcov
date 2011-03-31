@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'stringio'
+require 'fileutils'
 
 describe CoverageInformation do
   include CoverageState
@@ -9,14 +10,14 @@ describe CoverageInformation do
   end
 
   after(:each) do
-    File.delete('tmp') if File.exist?('tmp')
+    FileUtils.safe_unlink('tmp')
   end
 
   describe '#read' do
     it 'restores CoverageInformation' do
       StringIO.open("1\n#{B}\ta\t1\t2\tb\t0\t0\t0") { |io|
         @info.elems << CoverageElement.new(B, "a", [1, 2], "b")
-        @info.ieval = 1
+        @info.static_eval_id = 1
         actual = CoverageInformation.read(io)
         actual.should eq @info
       }
@@ -26,7 +27,7 @@ describe CoverageInformation do
   describe '#write' do
     it 'writes and restores itself' do
       @info.elems << CoverageElement.new(C, "", [3, 2], "ba")
-      @info.ieval = 1
+      @info.static_eval_id = 1
       open('tmp', 'w') { |f|
         @info.write(f)
       }
@@ -40,7 +41,7 @@ describe CoverageInformation do
   describe '#append' do
     it 'writes and restores itself' do
       @info.elems << CoverageElement.new(C, "", [3, 2], "ba")
-      @info.ieval = 1
+      @info.static_eval_id = 1
       open('tmp', 'w') { |f|
         @info.write(f)
       }

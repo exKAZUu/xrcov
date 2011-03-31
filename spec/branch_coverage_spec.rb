@@ -3,7 +3,7 @@ require 'spec_helper'
 describe BranchCoverage do
   describe '#insert_branch_coverage' do
     before do
-      @ins = CoverageInserter.new
+      @ins = CoverageInserter.new('fixture')
       def @ins.insert_coverage(src)
         @ast = Ripper::RubyBuilder.build(src)
         insert_branch_coverage('b')

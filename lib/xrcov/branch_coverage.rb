@@ -30,7 +30,7 @@ module BranchCoverage
   end
 
   def create_coverage_func(type, target, name, tag, child_range = (0...0))
-    @info.elems << CoverageElement.new(type, @path, target.position, tag, child_range)
+    @info.elems << CoverageElement.new(type, @src_path, target.position, tag, child_range)
     args = [
       Ruby::Integer.new(next_id()),
       Ruby::Integer.new(type),

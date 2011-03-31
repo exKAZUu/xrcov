@@ -1,9 +1,9 @@
-require 'singleton'
-
 class TsvWriter
-  include Singleton
+  attr_reader :file
 
-  attr_writer :file
+  def initialize(file)
+    @file = file
+  end
 
   def write(o)
     @file.write(o)

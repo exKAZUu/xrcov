@@ -1,3 +1,6 @@
+require 'find'
+require 'fileutils'
+
 class CoverageInserter
 
   include AstBuilder
@@ -5,9 +8,16 @@ class CoverageInserter
   include BranchCoverage
   include EvalCoverage
 
-  attr_reader :info
+  OUT_SUFFIX = '.xrcov_out'
+  BACKUP_SUFFIX = '.xrcov_bak'
+  ID_NAME = '.xrcov_id'
+  ELEMENTS_NAME = '.xrcov_elems'
+  INSERTED_NAME = '.xrcov_inserted'
 
-  def initialize(first_id = 0)
+  attr_accessor :info
+
+  def initialize(out_path, first_id = 0)
+    @out_path = out_path
     # measurement targets corresponding to ids (0, 1, 2, ...)
     @id = first_id - 1
     @info = CoverageInformation.new()
@@ -18,75 +28,80 @@ class CoverageInserter
     @id = @id + 1
   end
 
-  def insert_coverage_in_string(src, path)
+  def insert_coverage_in_string(src, src_path)
     @ast = Ripper::RubyBuilder.build(src)
-    @path = path
+    @src_path = src_path
 
-    insert_statement_coverage('stmt_cov')
-    insert_branch_coverage('pred_cov')
-    insert_eval_coverage('eval_cov')
-    
+    insert_statement_coverage('XrcovOut.stmt')
+    insert_branch_coverage('XrcovOut.pred')
+    insert_eval_coverage('XrcovOut.eval')
+
     @ast.to_ruby
   end
 
   def initialize_eval()
-    File.open('coverage_id', 'rb') { |f|
-      @id = Marshal.load(f) - 1
+    File.open(File.join(@out_path, ID_NAME), 'r') { |f|
+      @id = f.read().to_i - 1
     }
-    if File.exist?('coverage_inserted')
-      File.open('coverage_inserted', 'rb') { |f|
-        @inserted = Marshal.load(f)
-      }
-    else
-      @inserted = {}
-    end
+    File.open(File.join(@out_path, INSERTED_NAME), 'rb') { |f|
+      @inserted = Marshal.load(f)
+    }
     self
   end
 
-  def insert_coverage_in_eval(id, src, path)
+  def insert_coverage_in_eval(id, src, src_path)
     return @inserted[[id, src]] if @inserted[[id, src]]
 
-    ret = insert_coverage_in_string(src, path)
+    ret = insert_coverage_in_string(src, src_path)
 
-    File.open('coverage_id', 'wb') { |f|
-      Marshal.dump(next_id(), f)
+    File.open(File.join(@out_path, ID_NAME), 'w') { |f|
+      f.write(next_id())
     }
-
-    File.open('coverage_extra_info', 'ab') { |f|
-      Marshal.dump(@info, f)
+    File.open(File.join(@out_path, ELEMENTS_NAME), 'a') { |f|
+      @info.append(f)
     }
-
-    File.open('coverage_inserted', 'wb') { |f|
+    File.open(File.join(@out_path, INSERTED_NAME), 'wb') { |f|
       Marshal.dump(@inserted, f)
     }
 
     ret
   end
 
-  def insert_coverage_in_file(path, outdir = nil)
-    src = File.open(path) { |f| f.read() }
-    ret = insert_coverage_in_string(src, path)
+  def insert_coverage_in_file(src_path)
+    src = File.open(src_path) { |f| f.read() }
+    File.open(src_path + BACKUP_SUFFIX, 'w') { |f|
+      f.write(src)
+    }
+    ret = insert_coverage_in_string(src, src_path)
 
-    if outdir != nil then
-      outdir += '/' if outdir[-1] != '/'
-      File.open(outdir + File.basename(path), 'w') { |f|
-        f.write("require 'xrcov'\n")
-        f.write("require 'xrcov/coverage_fileout'\n")
-        f.write(ret)
-      }
-      File.open(outdir + 'coverage_id', 'w') { |f|
-        f.write(next_id())
-      }
-      File.open(outdir + 'coverage_elements', 'w') { |f|
+    File.open(src_path, 'w') { |f|
+      f.write("require 'xrcov'\n")
+      f.write("$xrcov_out_path = #{@out_path}\n")
+      f.write("require 'xrcov/coverage_fileout'\n")
+      f.write(ret)
+    }
 
-        Marshal.dump(@info, f)
-      }
-      File.open(outdir + 'coverage_element_groups', 'w') { |f|
-        Marshal.dump(@info, f)
-      }
-      File.delete(outdir + 'coverage_inserted') if File.exist?(outdir + 'coverage_inserted')
-      File.delete(outdir + 'coverage_extra_info') if File.exist?(outdir + 'coverage_extra_info')
-    end
+    File.open(File.join(@out_path, ID_NAME), 'w') { |f|
+      f.write(next_id())
+    }
+    File.open(File.join(@out_path, ELEMENTS_NAME), 'w') { |f|
+      @info.write(f)
+    }
+    File.open(File.join(@out_path, INSERTED_NAME), 'wb') { |f|
+      Marshal.dump(@inserted, f)
+    }
+
+    ret
+  end
+
+  def restore_original_sources(src_dir=@out_path)
+    Find.find(src_dir) { |back|
+      if back.end_with?(BACKUP_SUFFIX)
+        org = back[0...-BACKUP_SUFFIX.length]
+        FileUtils.rm(org)
+        FileUtils.mv(back, org)
+      end
+    }
   end
 end
 

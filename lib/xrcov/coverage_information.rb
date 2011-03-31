@@ -1,29 +1,31 @@
 class CoverageInformation
-  attr_accessor :elems, :ieval
+  # target elements
+  attr_accessor :elems
+  # to separate static eval ids from dynamic eval ids
+  attr_accessor :static_eval_id
 
   def initialize()
     @elems = []
   end
 
   def ==(that)
-    @elems == that.elems && @ieval == that.ieval
+    @elems == that.elems && @static_eval_id == that.static_eval_id
   end
 
   def append(f)
-    TsvWriter.instance.file = f
     @elems.each { |e|
-      e.write(TsvWriter.instance)
+      e.write(TsvWriter.new(f))
     }
   end
 
   def write(f)
-    f.puts @ieval
+    f.puts @static_eval_id
     append(f)
   end
 
   def self.read(f)
     info = CoverageInformation.new
-    info.ieval = f.readline().chomp.to_i
+    info.static_eval_id = f.readline().chomp.to_i
     until f.eof?
       ss = f.readline().split("\t")
       info.elems << CoverageElement.read(ss)
