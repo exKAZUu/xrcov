@@ -32,7 +32,7 @@ describe BranchCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "if b(5,#{B},((b(1,#{C},(true)) && b(2,#{ElementType::CONDITION},(true)) and b(3,#{ElementType::CONDITION},(true)) || b(4,#{ElementType::CONDITION},(true)) or b(0,#{ElementType::CONDITION},(true))))) then end"
+        @ret.should eq "if b(5,#{BR},((b(1,#{CO},(true)) && b(2,#{CO},(true)) and b(3,#{CO},(true)) || b(4,#{CO},(true)) or b(0,#{CO},(true))))) then end"
       end
 
       it 'gets coveraged elements' do

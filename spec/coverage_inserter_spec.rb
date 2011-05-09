@@ -1,24 +1,49 @@
 require 'spec_helper'
 
 describe CoverageInserter do
-  IN_PATH = 'fixture/input'
-  OUT_PATH = 'fixture/output'
-  before(:each) do
-    FileUtils.rm_r(OUT_PATH, :force => true)
-    FileUtils.mkdir(OUT_PATH)
-    @info = CoverageInserter.new(OUT_PATH)
+  IN_DIR = 'fixture/input'
+  EXP_DIR = 'fixture/expected'
+  OUT_DIR = 'fixture/output'
+
+  before(:all) do
+    FileUtils.rm_f(OUT_DIR)
+  end
+
+  def copy_files(dir_name)
+    in_dir = File.join(IN_DIR, dir_name)
+    FileUtils.cp_r(in_dir, OUT_DIR)
+  end
+
+  def assert_insert(dir_name)
+    copy_files(dir_name)
+    out_dir = File.join(OUT_DIR, dir_name)
+    CoverageInserter.insert_coverage(out_dir)
+    exp_dir = File.join(EXP_DIR, name)
+    Find.find(exp_dir) { |exp_path|
+      exp = File.open(exp_path) { |f| f.read() }
+      name = File.basename(exp_path)
+      out_path = File.join(OUT_DIR, name)
+      act = File.open(out_path) { |f| f.read() }
+      act.should eq exp
+    }
   end
 
   describe '#insert_coverage_in_file' do
-    context 'given sample.rb' do
-      NAME = 'sample.rb'
-      PATH = File.join(OUT_PATH, NAME)
-
+    context 'given stmt' do
       it 'inserts measurement code' do
-        FileUtils.cp(File.join(IN_PATH, NAME), PATH)
-        ret = @info.insert_coverage_in_file(PATH)
-        #exp = File.open(PATH + '.exp') { |f| f.read() }
-        #ret.should eq exp
+        assert_insert 'stmt'
+      end
+    end
+
+    context 'given sample' do
+      it 'inserts measurement code' do
+        assert_insert 'sample'
+      end
+    end
+
+    context 'given branch' do
+      it 'inserts measurement code' do
+        assert_insert 'branch'
       end
     end
   end

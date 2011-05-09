@@ -5,20 +5,12 @@ class Writer
     @arr = []
   end
 
-  def write(o)
-    @arr << o.to_s
-  end
-
-  def write_last(o)
-    write(o)
-    ret = @arr
-    @arr = []
-    ret
+  def write(*o)
+    o
   end
 end
 
 describe CoverageElement do
-  include CoverageState
 
   def initialize(*states)
     @info = CoverageInformation.new()
@@ -32,9 +24,9 @@ describe CoverageElement do
   end
 
   describe '#children_and_self_state' do
-    context 'given NONE as state' do
+    context 'given N as state' do
       before do
-        initialize(NONE)
+        initialize(N)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
@@ -42,9 +34,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given FALSE as state' do
+    context 'given F as state' do
       before do
-        initialize(FALSE)
+        initialize(F)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
@@ -52,9 +44,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given TRUE as state' do
+    context 'given T as state' do
       before do
-        initialize(TRUE)
+        initialize(T)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
@@ -62,9 +54,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given BOTH as state' do
+    context 'given B as state' do
       before do
-        initialize(BOTH)
+        initialize(B)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
@@ -72,57 +64,57 @@ describe CoverageElement do
       end
     end
 
-    context 'given FALSE, BOTH, TRUE, NONE as states' do
+    context 'given F, B, T, N as states' do
       before do
-        initialize(FALSE, BOTH, TRUE, NONE)
+        initialize(F, B, T, N)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
-        @e.children_and_self_state(@info).should eq NONE
+        @e.children_and_self_state(@info).should eq N
       end
     end
 
-    context 'given FALSE, BOTH, TRUE, TRUE as states' do
-      before do initialize(FALSE, BOTH, TRUE, TRUE)
+    context 'given F, B, T, T as states' do
+      before do initialize(F, B, T, T)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
-        @e.children_and_self_state(@info).should eq NONE
+        @e.children_and_self_state(@info).should eq N
       end
     end
 
-    context 'given FALSE, BOTH, BOTH, BOTH as states' do
-      before do initialize(FALSE, BOTH, BOTH, BOTH)
+    context 'given F, B, B, B as states' do
+      before do initialize(F, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
-        @e.children_and_self_state(@info).should eq FALSE
+        @e.children_and_self_state(@info).should eq F
       end
     end
 
-    context 'given TRUE, BOTH, BOTH, BOTH as states' do
-      before do initialize(TRUE, BOTH, BOTH, BOTH)
+    context 'given T, B, B, B as states' do
+      before do initialize(T, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
-        @e.children_and_self_state(@info).should eq TRUE
+        @e.children_and_self_state(@info).should eq T
       end
     end
 
-    context 'given BOTH, BOTH, BOTH, BOTH as states' do
-      before do initialize(BOTH, BOTH, BOTH, BOTH)
+    context 'given B, B, B, B as states' do
+      before do initialize(B, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children and itself' do
-        @e.children_and_self_state(@info).should eq BOTH
+        @e.children_and_self_state(@info).should eq B
       end
     end
   end
 
   describe '#children_or_self_state' do
-    context 'given NONE as state' do
+    context 'given N as state' do
       before do
-        initialize(NONE)
+        initialize(N)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
@@ -130,9 +122,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given FALSE as state' do
+    context 'given F as state' do
       before do
-        initialize(FALSE)
+        initialize(F)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
@@ -140,9 +132,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given TRUE as state' do
+    context 'given T as state' do
       before do
-        initialize(TRUE)
+        initialize(T)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
@@ -150,9 +142,9 @@ describe CoverageElement do
       end
     end
 
-    context 'given BOTH as state' do
+    context 'given B as state' do
       before do
-        initialize(BOTH)
+        initialize(B)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
@@ -160,49 +152,49 @@ describe CoverageElement do
       end
     end
 
-    context 'given FALSE, BOTH, TRUE, NONE as states' do
+    context 'given F, B, T, N as states' do
       before do
-        initialize(FALSE, BOTH, TRUE, NONE)
+        initialize(F, B, T, N)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
-        @e.children_or_self_state(@info).should eq NONE
+        @e.children_or_self_state(@info).should eq N
       end
     end
 
-    context 'given FALSE, BOTH, TRUE, TRUE as states' do
-      before do initialize(FALSE, BOTH, TRUE, TRUE)
+    context 'given F, B, T, T as states' do
+      before do initialize(F, B, T, T)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
-        @e.children_or_self_state(@info).should eq TRUE
+        @e.children_or_self_state(@info).should eq T
       end
     end
 
-    context 'given FALSE, BOTH, BOTH, BOTH as states' do
-      before do initialize(FALSE, BOTH, BOTH, BOTH)
+    context 'given F, B, B, B as states' do
+      before do initialize(F, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
-        @e.children_or_self_state(@info).should eq BOTH
+        @e.children_or_self_state(@info).should eq B
       end
     end
 
-    context 'given TRUE, BOTH, BOTH, BOTH as states' do
-      before do initialize(TRUE, BOTH, BOTH, BOTH)
+    context 'given T, B, B, B as states' do
+      before do initialize(T, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
-        @e.children_or_self_state(@info).should eq BOTH
+        @e.children_or_self_state(@info).should eq B
       end
     end
 
-    context 'given BOTH, BOTH, BOTH, BOTH as states' do
-      before do initialize(BOTH, BOTH, BOTH, BOTH)
+    context 'given B, B, B, B as states' do
+      before do initialize(B, B, B, B)
       end
 
       it 'gets value of logical multiply between states of children or value of its state' do
-        @e.children_or_self_state(@info).should eq BOTH
+        @e.children_or_self_state(@info).should eq B
       end
     end
   end

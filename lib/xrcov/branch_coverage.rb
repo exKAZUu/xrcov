@@ -52,7 +52,7 @@ module BranchCoverage
           # = operator is overrided so must not change target node in create_coverage_func
           target.prolog = nil # should do it after inserting node into ast
         end
-    
+
         target = cond.right
         unless has_child_cond?(target, others, e)
           cond.right = create_coverage_func(ElementType::CONDITION, target, cov_func_name, "")
@@ -68,4 +68,3 @@ module BranchCoverage
     }
   end
 end
-

@@ -17,7 +17,7 @@ describe StatementCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "(s(0,#{S});a = 0)"
+        @ret.should eq "(s(0,#{ST});a = 0)"
       end
 
       it 'gets coveraged elements' do
@@ -32,7 +32,7 @@ describe StatementCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "(s(0,#{S});a=0);(s(1,#{S});b=1)"
+        @ret.should eq "(s(0,#{ST});a=0);(s(1,#{ST});b=1)"
       end
 
       it 'gets coveraged elements' do
@@ -48,7 +48,7 @@ describe StatementCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "(s(0,#{S});if true then end)"
+        @ret.should eq "(s(0,#{ST});if true then end)"
       end
 
       it 'gets coveraged elements' do
@@ -63,7 +63,7 @@ describe StatementCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "(s(0,#{S});loop do end)"
+        @ret.should eq "(s(0,#{ST});loop do end)"
       end
 
       it 'gets coveraged elements' do
@@ -78,7 +78,7 @@ describe StatementCoverage do
       end
 
       it 'gets a inserted source code' do
-        @ret.should eq "(s(0,#{S});while true do (s(1,#{S});(s(2,#{S});break) if true) end)"
+        @ret.should eq "(s(0,#{ST});while true do (s(1,#{ST});(s(2,#{ST});break) if true) end)"
       end
 
       it 'gets coveraged elements' do

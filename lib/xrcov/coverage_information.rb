@@ -14,7 +14,7 @@ class CoverageInformation
 
   def append(f)
     @elems.each { |e|
-      e.write(TsvWriter.new(f))
+      e.write(TsvStream.new(f))
     }
   end
 
@@ -23,19 +23,22 @@ class CoverageInformation
     append(f)
   end
 
+  def finish_static_insertion
+    @static_eval_id = @elems.count
+  end
+
   def self.read(f)
     info = CoverageInformation.new
     info.static_eval_id = f.readline().chomp.to_i
-    until f.eof?
-      ss = f.readline().split("\t")
-      info.elems << CoverageElement.read(ss)
-    end
+    TsvStream.new(f).read_all { |record|
+      info.elems << CoverageElement.read(record)
+    }
     info
   end
 
   def read_coverage_data(f)
     until f.eof?
-      id, type, value = f.readline.split(',')
+      id, type, value = f.readline.split("\t")
       elems[id.to_i].state |= value.to_i
     end
   end

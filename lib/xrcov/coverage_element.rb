@@ -27,14 +27,9 @@ class CoverageElement
   end
 
   def write(out)
-    out.write(type)
-    out.write(path)
-    out.write(pos[0])
-    out.write(pos[1])
-    out.write(tag)
-    out.write(state)
-    out.write(child_range.first)
-    out.write_last(child_range.last + (child_range.exclude_end? ? 0 : 1))
+    child_first = child_range.first
+    child_last = child_range.last + (child_range.exclude_end? ? 0 : 1)
+    out.write(type, path, pos[0], pos[1], tag, state, child_first, child_last)
   end
 
   def self.read(ss)

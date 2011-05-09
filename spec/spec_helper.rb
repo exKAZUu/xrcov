@@ -3,6 +3,7 @@
 # add lib directory
 #$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'xrcov'
+require 'coverage_state_helper'
 require 'element_type_helper'
 require 'fileutils'
 

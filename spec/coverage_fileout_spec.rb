@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'coverage_fileout.rb' do
-  IN_PATH = 'fixture/input'
+  IN_PATH = 'fixture/input/sample'
   OUT_PATH = $xrcov_out_path = 'fixture/output'
 
   before(:each) do
@@ -10,11 +10,10 @@ describe 'coverage_fileout.rb' do
     @src_name = 'sample.rb'
     @src_path = File.join(OUT_PATH, @src_name)
     FileUtils.cp(File.join(IN_PATH, @src_name), @src_path)
-    @ins = CoverageInserter.new(OUT_PATH)
-    @ins.insert_coverage_in_file(@src_path)
+    CoverageInserter.insert_coverage(@src_path)
     require 'xrcov/coverage_fileout'
     XrcovOut.initialize() if XrcovOut.out.file.closed?
-    @out_file_path = File.join(OUT_PATH, CoverageInserter::OUT_SUFFIX)
+    @out_file_path = File.join(OUT_PATH, OUT_SUFFIX)
   end
 
   describe '#stmt_cov' do
