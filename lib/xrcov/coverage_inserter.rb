@@ -94,12 +94,13 @@ end
 
 class << CoverageInserter
   def insert_coverage(path)
-    if (File.file?(path))
-      ins = CoverageInserter.new(File.dirname(path))
+    if File.file?(path)
+      dir_path = File.dirname(path)
+      ins = CoverageInserter.new(dir_path)
       ins.insert_coverage_in_file(path)
-    elsif (File.directory?(path))
+    elsif File.directory?(path)
       ins = CoverageInserter.new(path)
-      Dir['**/*.rb'].each { |p|
+      Dir[File.join(path, '**/*.rb')].each { |p|
         ins.insert_coverage_in_file(p)
       }
     end

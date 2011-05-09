@@ -6,7 +6,8 @@ describe CoverageInserter do
   OUT_DIR = 'fixture/output'
 
   before(:all) do
-    FileUtils.rm_f(OUT_DIR)
+    FileUtils.rm_r(OUT_DIR, {:force => true})
+    FileUtils.mkdir(OUT_DIR)
   end
 
   def copy_files(dir_name)
@@ -18,12 +19,13 @@ describe CoverageInserter do
     copy_files(dir_name)
     out_dir = File.join(OUT_DIR, dir_name)
     CoverageInserter.insert_coverage(out_dir)
-    exp_dir = File.join(EXP_DIR, name)
-    Find.find(exp_dir) { |exp_path|
-      exp = File.open(exp_path) { |f| f.read() }
+    exp_dir = File.join(EXP_DIR, dir_name)
+    Dir[File.join(exp_dir, '**/*')].each { |exp_path|
+      next if File.file?(exp_path)
+      exp = File.open(exp_path, 'r') { |f| f.read() }
       name = File.basename(exp_path)
-      out_path = File.join(OUT_DIR, name)
-      act = File.open(out_path) { |f| f.read() }
+      out_path = File.join(out_dir, name)
+      act = File.open(out_path, 'r') { |f| f.read() }
       act.should eq exp
     }
   end
