@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe CoverageAnalyzer do
+  include CoverageAnalyzer
+
   before do
-    @anlz = CoverageAnalyzer.new
     @info = CoverageInformation.new
   end
 
@@ -14,7 +15,7 @@ describe CoverageAnalyzer do
         @info.elems << CoverageElement.new(ElementType::BRANCH, "", [1, 1], "")
         @info.elems[0].state |= CoverageState::BOTH
         @info.elems[2].state |= CoverageState::BOTH
-        @cov_count, @all_count = @anlz.analyze_stmt(@info)
+        @cov_count, @all_count = analyze_stmt(@info)
       end
 
       it 'gets the count of covered elements' do
@@ -38,7 +39,7 @@ describe CoverageAnalyzer do
         @info.elems[1].state |= CoverageState::BOTH
         @info.elems[2].state |= CoverageState::TRUE
         @info.elems[3].state |= CoverageState::BOTH
-        @cov_count, @all_count = @anlz.analyze_branch(@info)
+        @cov_count, @all_count = analyze_branch(@info)
       end
 
       it 'gets the count of covered elements' do
@@ -62,7 +63,7 @@ describe CoverageAnalyzer do
         @info.elems[1].state |= CoverageState::BOTH
         @info.elems[2].state |= CoverageState::BOTH
         @info.elems[3].state |= CoverageState::BOTH
-        @cov_count, @all_count = @anlz.analyze_cond(@info)
+        @cov_count, @all_count = analyze_cond(@info)
       end
 
       it 'gets the count of covered elements' do
@@ -86,7 +87,7 @@ describe CoverageAnalyzer do
         @info.elems[1].state |= CoverageState::BOTH
         @info.elems[2].state |= CoverageState::BOTH
         @info.elems[3].state |= CoverageState::BOTH
-        @cov_count, @all_count = @anlz.analyze_branch_cond(@info)
+        @cov_count, @all_count = analyze_branch_cond(@info)
       end
 
       it 'gets the count of covered elements' do
@@ -98,13 +99,5 @@ describe CoverageAnalyzer do
       end
     end
   end
-
-  #context 'running "(stmt_cov(0,0);a=0)"' do
-  #  it 'should analyze coverage information' do
-  #    stmt_cov(0,0);a=0
-  #    @rep.read_all_data('.')
-  #    @rep.analyze_stmt().should == [1, 1]
-  #  end
-  #end
 end
 

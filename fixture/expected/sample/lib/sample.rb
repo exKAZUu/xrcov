@@ -1,5 +1,5 @@
 require 'xrcov'
-$xrcov_out_path ||= 'fixture/output'
+$xrcov_out_dir ||= '/media/sf_Linux/xrcov/fixture/output/sample/lib'
 require 'xrcov/coverage_fileout'
 (XrcovOut.stmt(0,0);class Sample
   (XrcovOut.stmt(1,0);def test(i)
@@ -12,7 +12,12 @@ require 'xrcov/coverage_fileout'
     
     (XrcovOut.stmt(4,0);str = nil)
     (XrcovOut.stmt(5,0);2.times { |c|
-      (XrcovOut.stmt(10,0);str = %Q{      if i == #{(XrcovOut.stmt(13,0);i)} && j == #{(XrcovOut.stmt(14,0);j)}      })
+      (XrcovOut.stmt(10,0);str = %Q{      if i == #{(XrcovOut.stmt(13,0);i)} && j == #{(XrcovOut.stmt(14,0);j)} and i != j then
+        p 't'
+      else
+        p 'f'
+      end
+})
       
       (XrcovOut.stmt(11,0);eval(XrcovOut.eval(19,(str))))
       (XrcovOut.stmt(12,0);i = i + 1)

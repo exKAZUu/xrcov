@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'stringio'
-require 'fileutils'
 
 describe CoverageInformation do
   include CoverageState

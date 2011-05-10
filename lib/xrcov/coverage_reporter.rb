@@ -1,38 +1,51 @@
 class CoverageReporter
 
-  include Consts
+  include CoverageAnalyzer
 
-  def read_info()
-    File.open(File.join(@out_path, ELEMENTS_NAME), 'r') { |f|
+  def read_info(dir_path)
+    path = File.join(dir_path, ELEMENTS_NAME)
+    File.open(path, 'r') { |f|
       CoverageInformation.read(f)
     }
   end
 
-  def read_output(path, info)
+  def read_output(dir_path, info)
+    path = File.join(dir_path, OUT_SUFFIX)
     File.open(path, 'rb') { |f|
-      until f.eof?
-        arr = f.read(5).unpack('C*')
-        id = (arr[0] << 24) + (arr[1] << 16) + (arr[2] << 8) + arr[3]
-        value = arr[4] >> 6
-        puts id.to_s + ', ' + value.to_s
-        info.elems[id].state |= value
-      end
+      s = TsvStream.new(f)
+      s.read_all { |id, type, value|
+        info.elems[id.to_i].state |= value.to_i
+      }
     }
   end
 
-  def show()
-    path = ''
-    info = read_info(path)
-    read_output(path)
-    CoverageAnalyzer.analyze_stmt(info)
-    CoverageAnalyzer.analyze_branch(info)
-    CoverageAnalyzer.analyze_cond(info)
-    CoverageAnalyzer.analyze_branch_cond(info)
+  def print_result(dir_path)
+    info = read_info(dir_path)
+    read_output(dir_path, info)
+    stmt = analyze_stmt(info)
+    branch = analyze_branch(info)
+    cond = analyze_cond(info)
+    br_cond = analyze_branch_cond(info)
+    print_stmt(*stmt)
+    print_branch(*branch)
+    print_cond(*cond)
+    print_branch_cond(*br_cond)
+    [stmt, branch, cond, br_cond]
   end
-end
 
-if ARGV.count > 1 then
-  ins = CoverageReporter.new()
-  outdir = ARGV.shift
-  ARGV.each { |arg| ins.insert_coverage_in_file(arg, outdir) }
+  def print_stmt(executed, all)
+    print "statement coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+  end
+
+  def print_branch(executed, all)
+    print "branch coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+  end
+
+  def print_cond(executed, all)
+    print "condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+  end
+
+  def print_branch_cond(executed, all)
+    print "branch/condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+  end
 end

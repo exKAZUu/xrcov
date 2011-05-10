@@ -6,6 +6,7 @@ class CoverageInformation
 
   def initialize()
     @elems = []
+    @wrote_count = 0
   end
 
   def ==(that)
@@ -13,18 +14,15 @@ class CoverageInformation
   end
 
   def append(f)
-    @elems.each { |e|
+    @elems[@wrote_count..-1].each { |e|
       e.write(TsvStream.new(f))
     }
+    @wrote_count = @elems.count
   end
 
   def write(f)
-    f.puts @static_eval_id
+    f.puts @elems.count
     append(f)
-  end
-
-  def finish_static_insertion
-    @static_eval_id = @elems.count
   end
 
   def self.read(f)

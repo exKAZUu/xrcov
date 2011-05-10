@@ -1,5 +1,5 @@
 require 'xrcov'
-$xrcov_out_path ||= 'fixture/output'
+$xrcov_out_dir ||= '/media/sf_Linux/xrcov/fixture/output/stmt/lib'
 require 'xrcov/coverage_fileout'
 (XrcovOut.stmt(0,0);class A
   (XrcovOut.stmt(2,0);def a()

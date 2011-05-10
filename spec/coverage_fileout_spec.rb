@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe 'coverage_fileout.rb' do
-  IN_PATH = 'fixture/input/sample'
-  OUT_PATH = $xrcov_out_path = 'fixture/output'
+  IN_PATH = 'fixture/input/sample/lib'
+  OUT_PATH = $xrcov_out_dir = 'fixture/output'
 
   before(:each) do
     FileUtils.rm_r(OUT_PATH, :force => true)

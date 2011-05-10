@@ -1,4 +1,3 @@
-require 'find'
 require 'fileutils'
 
 class CoverageInserter
@@ -13,13 +12,15 @@ class CoverageInserter
   def initialize(out_dir, first_id = 0)
     @out_dir = out_dir
     # measurement targets corresponding to ids (0, 1, 2, ...)
-    @id = first_id - 1
+    @id = first_id
     @info = CoverageInformation.new()
     @inserted = {}
   end
 
   def next_id()
-    @id = @id + 1
+    ret = @id
+    @id = ret + 1
+    ret
   end
 
   def insert_coverage_in_string(src, src_path)
@@ -35,7 +36,7 @@ class CoverageInserter
 
   def initialize_eval()
     File.open(File.join(@out_dir, ID_NAME), 'r') { |f|
-      @id = f.read().to_i - 1
+      @id = f.read().to_i
     }
     File.open(File.join(@out_dir, INSERTED_NAME), 'rb') { |f|
       @inserted = Marshal.load(f)
@@ -45,7 +46,10 @@ class CoverageInserter
 
   def insert_coverage_in_eval(id, src, src_path)
     return @inserted[[id, src]] if @inserted[[id, src]]
-    insert_coverage_in_string(src, src_path)
+    new_src = insert_coverage_in_string(src, src_path)
+    @inserted[[id, src]] = new_src
+    update_coverage_files()
+    new_src
   end
 
   def insert_coverage_in_file(src_path)
@@ -69,7 +73,7 @@ require 'xrcov/coverage_fileout'
 
   def update_coverage_files()
     File.open(File.join(@out_dir, ID_NAME), 'w') { |f|
-      f.write(next_id())
+      f.write(@id)
     }
     File.open(File.join(@out_dir, ELEMENTS_NAME), 'a') { |f|
       @info.append(f)
@@ -81,7 +85,7 @@ require 'xrcov/coverage_fileout'
 
   def write_coverage_files()
     File.open(File.join(@out_dir, ID_NAME), 'w') { |f|
-      f.write(next_id())
+      f.write(@id)
     }
     File.open(File.join(@out_dir, ELEMENTS_NAME), 'w') { |f|
       @info.write(f)
@@ -108,16 +112,10 @@ class << CoverageInserter
   end
 
   def restore_original_sources(src_dir)
-    Find.find(src_dir) { |back|
-      if back.end_with?(BACKUP_SUFFIX)
-        org = back[0...-BACKUP_SUFFIX.length]
-        FileUtils.rm_f(org)
-        FileUtils.mv(back, org)
-      end
+    Dir[File.join(src_dir, '**/*' + BACKUP_SUFFIX)].each { |back|
+      org = back[0...-BACKUP_SUFFIX.length]
+      FileUtils.rm_f(org)
+      FileUtils.mv(back, org)
     }
   end
-end
-
-if ARGV.count > 1 then
-  ARGV.each { |arg| CoverageInserter.insert_coverage(arg, outdir) }
 end

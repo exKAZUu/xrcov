@@ -15,7 +15,7 @@ class Sample
       else
         p 'f'
       end
-      }
+}
       
       eval(str)
       i = i + 1

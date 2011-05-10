@@ -20,7 +20,7 @@ class TsvStream
   end
 
   def read_all()
-    until (@file.eof?)
+    until @file.eof?
       yield @file.readline().chomp.split("\t")
     end
   end

@@ -1,4 +1,4 @@
-Copyright (c) 2009 KAZUu
+Copyright (c) 2011 Kazunori SAKAMOTO
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

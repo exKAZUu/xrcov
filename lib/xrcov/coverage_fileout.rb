@@ -3,10 +3,10 @@ require 'xrcov'
 module XrcovOut
   module_function
   def initialize()
-    @ins = CoverageInserter.new($xrcov_out_path)
+    @ins = CoverageInserter.new($xrcov_out_dir)
     @ins.initialize_eval()
 
-    path = File.join($xrcov_out_path, OUT_SUFFIX)
+    path = File.join($xrcov_out_dir, OUT_SUFFIX)
     @out = TsvStream.new(File.open(path, 'a'))
   end
 
@@ -23,19 +23,22 @@ module XrcovOut
   end
 
   def stmt(id, type)
-    puts 'stmt: ' + id.to_s
+    #puts 'stmt: ' + id.to_s
     write(id, type, 3)
   end
 
   def pred(id, type, value)
-    puts 'pred: ' + id.to_s + ',' + value.to_s
+    #puts 'pred: ' + id.to_s + ',' + value.to_s
     write(id, type, value ? 2 : 1)
     value
   end
 
   def eval(id, str)
-    puts 'eval: ' + id.to_s
+    #puts 'eval: ' + id.to_s
+    #puts str
     return str unless str.instance_of?(String)
-    @ins.insert_coverage_in_eval(id, str, __FILE__)
+    str = @ins.insert_coverage_in_eval(id, str, __FILE__)
+    #puts str
+    str
   end
 end
