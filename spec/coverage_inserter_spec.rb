@@ -52,6 +52,12 @@ describe CoverageInserter do
         assert_insert 'fibonacci'
       end
     end
+
+    context 'given prolog' do
+      it 'inserts measurement code' do
+        assert_insert 'prolog'
+      end
+    end
   end
 end
 

@@ -54,9 +54,6 @@ class CoverageInserter
 
   def insert_coverage_in_file(src_path)
     src = File.open(src_path) { |f| f.read() }
-    File.open(src_path + BACKUP_SUFFIX, 'w') { |f|
-      f.write(src)
-    }
     ret = <<-EOS
 require 'xrcov'
 $xrcov_out_dir ||= '#{@out_dir}'
@@ -64,6 +61,9 @@ require 'xrcov/coverage_fileout'
     EOS
     ret += insert_coverage_in_string(src, src_path)
 
+    File.open(src_path + BACKUP_SUFFIX, 'w') { |f|
+      f.write(src)
+    }
     File.open(src_path, 'w') { |f|
       f.write(ret)
     }
@@ -101,10 +101,12 @@ class << CoverageInserter
     if File.file?(path)
       dir_path = File.dirname(path)
       ins = CoverageInserter.new(dir_path)
+      puts path
       ins.insert_coverage_in_file(path)
     elsif File.directory?(path)
       ins = CoverageInserter.new(path)
       Dir[File.join(path, '**/*.rb')].each { |p|
+        puts p
         ins.insert_coverage_in_file(p)
       }
     end

@@ -22,13 +22,3 @@ require 'xrcov/coverage_analyzer'
 
 require 'xrcov/coverage_inserter'
 require 'xrcov/coverage_reporter'
-
-if ARGV.count > 1 then
-  cmd = ARGV.shift
-  if cmd == '-i'
-    ARGV.each { |arg| CoverageInserter.insert_coverage(arg) }
-  else cmd == '-p'
-    reporter = CoverageReporter.new
-    ARGV.each { |arg| reporter.print_result(arg) }
-  end
-end

@@ -12,8 +12,11 @@ module EvalCoverage
 
   def insert_eval_coverage(cov_func_name)
     @ast.select(Ruby::Call).each { |e|
+      next unless Ruby::Identifier === e.identifier
       next unless EVAL_NAMES.include?(e.identifier.token)
-      next unless e.arguments != nil
+      next if e.arguments.nil?
+      next if e.arguments[0].nil?
+      next if e.arguments[0].arg.nil?
       target = e.arguments[0].arg
       e.arguments[0].arg = create_eval_coverage_func(target, cov_func_name, '')
       target.prolog = nil

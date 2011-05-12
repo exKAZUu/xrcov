@@ -48,4 +48,12 @@ class CoverageInformation
   def branch_elems()
     @elems.select{ |e| (e.type & ElementType::BRANCH) != 0 }
   end
+
+  def static_stmt_elems()
+    @elems[0..@static_eval_id].select{ |e| e.type == ElementType::STATEMENT }
+  end
+
+  def static_branch_elems()
+    @elems[0..@static_eval_id].select{ |e| (e.type & ElementType::BRANCH) != 0 }
+  end
 end

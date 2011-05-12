@@ -11,14 +11,23 @@ module StatementCoverage
     stmts
   end
 
+  def is_special_prolog?(p)
+    !p.nil? && p.elements.size > 0 && p.elements[0].token == '::'
+  end
+
   def insert_statement_coverage(cov_func_name)
     targets = @ast.select(Ruby::Statements)
-    # must process nested targets before enclosing targets
-    targets.each_with_index { |stmts, i|
+    # must process nested targets before enclosing targets(revers) to treat :: correctly
+    targets.reverse.each_with_index { |stmts, i|
       stmts.each_with_index { |stmt, j|
         next if stmt.class == Ruby::Statements
         stmts[j] = create_coverage_stmts(ElementType::STATEMENT, stmt, cov_func_name, "")
-        stmt.prolog = create_prolog(';') # should be after inserting node into ast 
+        if is_special_prolog?(stmt.prolog)
+          stmts[j].prolog.elements[0].token = ''
+          stmt.prolog = create_prolog(';::') # should be after inserting node into ast 
+        else
+          stmt.prolog = create_prolog(';') # should be after inserting node into ast 
+        end
       }
     }
   end

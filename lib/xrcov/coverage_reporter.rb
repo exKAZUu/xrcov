@@ -33,19 +33,33 @@ class CoverageReporter
     [stmt, branch, cond, br_cond]
   end
 
+  def print_static_result(dir_path)
+    info = read_info(dir_path)
+    read_output(dir_path, info)
+    stmt = analyze_static_stmt(info)
+    branch = analyze_static_branch(info)
+    cond = analyze_static_cond(info)
+    br_cond = analyze_static_branch_cond(info)
+    print_stmt(*stmt)
+    print_branch(*branch)
+    print_cond(*cond)
+    print_branch_cond(*br_cond)
+    [stmt, branch, cond, br_cond]
+  end
+
   def print_stmt(executed, all)
-    print "statement coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+    puts "statement coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
   end
 
   def print_branch(executed, all)
-    print "branch coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+    puts "branch coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
   end
 
   def print_cond(executed, all)
-    print "condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+    puts "condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
   end
 
   def print_branch_cond(executed, all)
-    print "branch/condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
+    puts "branch/condition coverage: #{executed.to_f / all.to_f} (#{executed} / #{all})"
   end
 end

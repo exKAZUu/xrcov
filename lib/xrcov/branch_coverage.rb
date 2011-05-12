@@ -40,7 +40,7 @@ module BranchCoverage
   end
 
   def insert_branch_coverage(cov_func_name)
-    @ast.select(Ruby::If).each { |e|
+    (@ast.select(Ruby::If) + @ast.select(Ruby::IfMod)).each { |e|
       conds = get_conds(e)
       istart = @info.elems.count()
       # insert cond_cov in conditions of branch

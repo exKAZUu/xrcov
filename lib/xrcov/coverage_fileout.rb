@@ -34,11 +34,11 @@ module XrcovOut
   end
 
   def eval(id, str)
-    #puts 'eval: ' + id.to_s
-    #puts str
+    puts 'eval: ' + id.to_s
+    puts str
     return str unless str.instance_of?(String)
     str = @ins.insert_coverage_in_eval(id, str, __FILE__)
-    #puts str
+    puts str
     str
   end
 end
